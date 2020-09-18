@@ -5,7 +5,6 @@ import Room from "./Rooms";
 // Entidade representa uma tables no DB
 @Entity("hotels")
 export default class Hotel {
-    // chave primaria auto incremental
     @PrimaryGeneratedColumn()
     id: number;
 

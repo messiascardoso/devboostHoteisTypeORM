@@ -3,6 +3,7 @@ import express, { Application, Request, Response } from "express";
 import { Connection, createConnection, Repository } from "typeorm";
 import Hotel from "./repository/Hotels";
 import Room from "./repository/Rooms";
+import Reservation from "./repository/Reservations";
 // import Todo from "./repository/Reservations";
 
 const app: Application = express();
@@ -193,6 +194,95 @@ app.delete(
     );
 
 
+  //Reservations
+  app.get(
+    "/reservations",
+    async (req: Request, res: Response): Promise<Response> => {
+      const connection = await createConnection();
+
+      const reservationsRepository: Repository<Reservation> = connection.getRepository(Reservation);
+      const Reservations: Reservation[] = await reservationsRepository.find();
+      connection.close();
+      return res.json({
+        Reservations,
+      });
+    }
+  );
+  
+  app.post(
+    "/reservations",
+    async (req: Request, res: Response): Promise<Response> => {
+      const connection = await createConnection();
+  
+      const reservationsRepository: Repository<Reservation> = connection.getRepository(Reservation);
+      const { checkin, checkout, room } = req.body;
+      const reservations: Reservation = new Reservation(
+        checkin,
+        checkout,
+        room
+      );
+      await reservationsRepository.save(reservations);
+      connection.close();
+      return res.json({
+        reservations,
+      });
+    }
+  );
+  
+  app.put(
+    "/reservations/:id",
+    async (req: Request, res: Response): Promise<Response> => {
+      const connection = await createConnection();
+  
+      const { id } = req.params;
+      const {
+        checkin,
+        checkout,
+        room
+      } = req.body;
+      
+      const reservationsRepository: Repository<Reservation> = connection.getRepository(Reservation);
+      
+      const reservation: Reservation | undefined = await reservationsRepository.findOne(id);
+      
+      if (reservation) {
+        reservation.checkin = checkin;
+        reservation.checkout = checkout;
+        reservation.room = room;
+        await reservationsRepository.save(reservation);
+        connection.close();
+        return res.json({
+          reservation,
+        });
+      }
+      connection.close();
+      return res.status(404).json({
+          Error: 'Reserva não encontrado',
+        });
+
+    }
+  );
+  
+  app.delete(
+      "/reservations/:id",
+      async (req: Request, res: Response): Promise<Response> => {
+        const connection = await createConnection();
+        const { id } = req.params;
+        const reservationsRepository: Repository<Reservation> = connection.getRepository(Reservation);
+        const reservation: Reservation | undefined = await reservationsRepository.findOne(id);
+    
+        if (reservation) {
+          await reservationsRepository.remove(reservation);
+          connection.close();
+          return res.status(200).send();
+        }
+
+        connection.close();
+        return res.status(404).json({
+            Error: 'Reserva não encontrada não encontrado',
+          });
+      }
+    );
 
 
 const port: any = process.env.PORT || 3000;

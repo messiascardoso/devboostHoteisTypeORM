@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import Reservations from "./Reservations";
 import Hotel from "./Hotels";
+import Reservation from "./Reservations";
 
 @Entity("rooms")
 export default class Room {
@@ -15,6 +15,9 @@ export default class Room {
 
     @ManyToOne(type => Hotel, hotel => hotel.room,{ onDelete: "CASCADE"}) 
     hotel: Hotel;
+
+    @OneToMany(type => Reservation, reservation => reservation.room)
+    reservation: Reservation[];
 
     constructor(tamanho: string, numero: number, hotel: Hotel) {
         this.tamanho = tamanho,

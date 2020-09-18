@@ -1,9 +1,10 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import Room from "./Rooms";
 // import User from "./Hotels";
 
 
 @Entity("reservations")
-export default class Reservations {
+export default class Reservation {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -16,12 +17,12 @@ export default class Reservations {
     @CreateDateColumn()
     created_at: Date;
 
-    // @ManyToOne(type => User, user => user.todos)
-    // user: User;
+    @ManyToOne(type => Room, room => room.reservation, { onDelete: "CASCADE"})
+    room: Room;
 
-    constructor(checkin: Date, checkout: Date, created_at: Date) {
-        this.checkin= checkin, 
-        this.checkout= checkout, 
-        this.created_at= created_at
+    constructor(checkin: Date, checkout: Date, room: Room) {
+        this.checkin = checkin, 
+        this.checkout = checkout,
+        this.room = room
     }
 }

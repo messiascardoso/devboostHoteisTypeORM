@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
 const Hotels_1 = __importDefault(require("./Hotels"));
+const Reservations_1 = __importDefault(require("./Reservations"));
 let Room = class Room {
     constructor(tamanho, numero, hotel) {
         this.tamanho = tamanho,
@@ -37,6 +38,10 @@ __decorate([
     typeorm_1.ManyToOne(type => Hotels_1.default, hotel => hotel.room, { onDelete: "CASCADE" }),
     __metadata("design:type", Hotels_1.default)
 ], Room.prototype, "hotel", void 0);
+__decorate([
+    typeorm_1.OneToMany(type => Reservations_1.default, reservation => reservation.room),
+    __metadata("design:type", Array)
+], Room.prototype, "reservation", void 0);
 Room = __decorate([
     typeorm_1.Entity("rooms"),
     __metadata("design:paramtypes", [String, Number, Hotels_1.default])
