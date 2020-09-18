@@ -2,6 +2,7 @@ import "reflect-metadata";
 import express, { Application, Request, Response } from "express";
 import { Connection, createConnection, Repository } from "typeorm";
 import Hotel from "./repository/Hotels";
+import Room from "./repository/Rooms";
 // import Todo from "./repository/Reservations";
 
 const app: Application = express();
@@ -102,6 +103,97 @@ app.delete(
         });
     }
   );
+
+
+  //Rooms
+  app.get(
+    "/rooms",
+    async (req: Request, res: Response): Promise<Response> => {
+      const connection = await createConnection();
+
+      const roomsRepository: Repository<Room> = connection.getRepository(Room);
+      const rooms: Room[] = await roomsRepository.find();
+      connection.close();
+      return res.json({
+        rooms,
+      });
+    }
+  );
+  
+  app.post(
+    "/rooms",
+    async (req: Request, res: Response): Promise<Response> => {
+      const connection = await createConnection();
+  
+      const roomsRepository: Repository<Room> = connection.getRepository(Room);
+      const { tamanho, numero, hotel } = req.body;
+      const room: Room = new Room(
+        tamanho,
+        numero,
+        hotel
+      );
+      await roomsRepository.save(room);
+      connection.close();
+      return res.json({
+        room,
+      });
+    }
+  );
+  
+  app.put(
+    "/rooms/:id",
+    async (req: Request, res: Response): Promise<Response> => {
+      const connection = await createConnection();
+  
+      const { id } = req.params;
+      const {
+        tamanho, numero, hotel
+      } = req.body;
+
+      const roomsRepository: Repository<Room> = connection.getRepository(Room);
+  
+      const room: Room | undefined = await roomsRepository.findOne(id);
+  
+      if (room) {
+        room.tamanho = tamanho;
+        room.numero = numero;
+        room.hotel = hotel;
+        await roomsRepository.save(room);
+        connection.close();
+        return res.json({
+          room,
+        });
+      }
+      connection.close();
+      return res.status(404).json({
+          Error: 'Quarto não encontrado',
+        });
+    }
+  );
+  
+  app.delete(
+      "/rooms/:id",
+      async (req: Request, res: Response): Promise<Response> => {
+        const connection = await createConnection();
+        const { id } = req.params;
+        const roomsRepository: Repository<Room> = connection.getRepository(Room);
+        const room: Room | undefined = await roomsRepository.findOne(id);
+    
+        if (room) {
+          await roomsRepository.remove(room);
+          connection.close();
+          return res.status(200).send();
+        }
+
+        connection.close();
+        return res.status(404).json({
+            Error: 'Quarto não encontrado',
+          });
+      }
+    );
+
+
+
 
 const port: any = process.env.PORT || 3000;
 

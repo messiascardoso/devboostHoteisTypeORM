@@ -13,7 +13,7 @@ export default class Room {
     @Column()
     numero: number;
 
-    @ManyToOne(type => Hotel, hotel => hotel.room)
+    @ManyToOne(type => Hotel, hotel => hotel.room,{ onDelete: "CASCADE"}) 
     hotel: Hotel;
 
     constructor(tamanho: string, numero: number, hotel: Hotel) {

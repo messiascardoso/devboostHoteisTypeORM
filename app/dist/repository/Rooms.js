@@ -34,7 +34,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Room.prototype, "numero", void 0);
 __decorate([
-    typeorm_1.ManyToOne(type => Hotels_1.default, hotel => hotel.room),
+    typeorm_1.ManyToOne(type => Hotels_1.default, hotel => hotel.room, { onDelete: "CASCADE" }),
     __metadata("design:type", Hotels_1.default)
 ], Room.prototype, "hotel", void 0);
 Room = __decorate([
