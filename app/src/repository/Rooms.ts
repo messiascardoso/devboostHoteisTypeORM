@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Reservations from "./Reservations";
-import Hotel from "./Hotel";
+import Hotel from "./Hotels";
 
 @Entity("rooms")
 export default class Room {

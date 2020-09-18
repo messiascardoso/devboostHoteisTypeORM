@@ -11,10 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
-const Hotel_1 = __importDefault(require("./Hotel"));
+const Hotels_1 = __importDefault(require("./Hotels"));
 let Room = class Room {
     constructor(tamanho, numero, hotel) {
         this.tamanho = tamanho,
@@ -35,11 +34,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Room.prototype, "numero", void 0);
 __decorate([
-    typeorm_1.ManyToOne(type => Hotel_1.default, hotel => hotel.room),
-    __metadata("design:type", typeof (_a = typeof Hotel_1.default !== "undefined" && Hotel_1.default) === "function" ? _a : Object)
+    typeorm_1.ManyToOne(type => Hotels_1.default, hotel => hotel.room),
+    __metadata("design:type", Hotels_1.default)
 ], Room.prototype, "hotel", void 0);
 Room = __decorate([
     typeorm_1.Entity("rooms"),
-    __metadata("design:paramtypes", [String, Number, typeof (_b = typeof Hotel_1.default !== "undefined" && Hotel_1.default) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [String, Number, Hotels_1.default])
 ], Room);
 exports.default = Room;
