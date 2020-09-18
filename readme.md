@@ -32,6 +32,8 @@ $ docker-compose up
 
 ### TEST using CURL
 
+#### Hotels
+
 - Lista Hotel
 ```
 $ curl -XGET 'localhost:2000/hotels'
@@ -64,4 +66,34 @@ $ curl -XPUT -d '{
 - Delete Hotel
 ```
 $ curl -XDELETE 'localhost:2000/hotels/1'
+```
+
+#### Rooms
+
+- Lista Quarto
+```
+$ curl -XGET 'localhost:2000/rooms'
+```
+
+- Criar Quarto
+```
+$ curl -XPOST -d '{
+	"tamanho": "2 metros quadrados",
+	"numero": 201,
+	"hotel": 2
+}' 'localhost:2000/rooms'
+```
+
+- Update Hotel
+```
+$ curl -XPUT -d '{
+	"tamanho": "3 metros quadrados",
+	"numero": 201,
+	"hotel": 1
+}' 'localhost:2000/rooms/1'
+```
+
+- Delete Hotel
+```
+$ curl -XDELETE 'localhost:2000/rooms/4'
 ```
