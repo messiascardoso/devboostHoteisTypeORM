@@ -16,35 +16,59 @@ app.get("/hotels", async (req, res) => {
     const hotels = await hotelsRepository.find();
     connection.close();
     return res.json({
-        hotels
+        hotels,
     });
 });
-// app.post("/hotels", async (req: Request, res: Response): Promise<Response> => {
-//     const connection = await createConnection();
-//     const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
-//     const user: User = new User(req.body.nome, req.body.email);
-//     await userRepository.save(user); // &user.id = 1
-//     connection.close();
-//     return res.json({
-//         id: user.id
-//     });
-// });
-// app.put("/users", async (req: Request, res: Response): Promise<Response> => {
-//     const connection = await createConnection();
-//     const userRepository: Repository<User> = connection.getRepository(User);
-//     const user: User | undefined = await userRepository.findOne(req.body.id);
-//     if (user !== undefined) {
-//         user.nome = req.body.nome;
-//         user.email = req.body.email;
-//         await userRepository.save(user);
-//         connection.close();
-//         return res.json({
-//             user
-//         });
-//     }
-//     connection.close();
-//     return res.status(404).send();
-// });
+app.post("/hotels", async (req, res) => {
+    const connection = await typeorm_1.createConnection();
+    const hotelsRepository = connection.getRepository(Hotels_1.default);
+    const { nome, descricao, endereco, cidade, estrelas, foto_url } = req.body;
+    const hotel = new Hotels_1.default(nome, descricao, endereco, cidade, estrelas, foto_url);
+    await hotelsRepository.save(hotel);
+    connection.close();
+    return res.json({
+        hotel,
+    });
+});
+app.put("/hotels/:id", async (req, res) => {
+    const connection = await typeorm_1.createConnection();
+    const { id } = req.params;
+    const { nome, descricao, endereco, cidade, estrelas, foto_url, } = req.body;
+    const hotelsRepository = connection.getRepository(Hotels_1.default);
+    const hotel = await hotelsRepository.findOne(id);
+    if (hotel) {
+        hotel.nome = nome;
+        hotel.descricao = descricao;
+        hotel.endereco = endereco;
+        hotel.cidade = cidade;
+        hotel.estrelas = estrelas;
+        hotel.foto_url = foto_url;
+        await hotelsRepository.save(hotel);
+        connection.close();
+        return res.json({
+            hotel,
+        });
+    }
+    connection.close();
+    return res.status(404).json({
+        Error: 'Hotel não encontrado',
+    });
+});
+app.delete("/hotels/:id", async (req, res) => {
+    const connection = await typeorm_1.createConnection();
+    const { id } = req.params;
+    const hotelsRepository = connection.getRepository(Hotels_1.default);
+    const hotel = await hotelsRepository.findOne(id);
+    if (hotel) {
+        await hotelsRepository.delete(hotel);
+        connection.close();
+        return res.status(200).send();
+    }
+    connection.close();
+    return res.status(404).json({
+        Error: 'Hotel não encontrado',
+    });
+});
 // app.get("/todos", async (req: Request, res: Response): Promise<Response> => {
 //     const connection: Connection = await createConnection();
 //     const userRepository: Repository<User> = connection.getRepository(User);

@@ -8,52 +8,100 @@ const app: Application = express();
 
 app.use(express.json());
 
-app.get("/hotels", async (req: Request, res: Response): Promise<Response> => {
+app.get(
+  "/hotels",
+  async (req: Request, res: Response): Promise<Response> => {
     const connection = await createConnection();
     const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
     const hotels: Hotel[] = await hotelsRepository.find();
     connection.close();
     return res.json({
-        hotels
+      hotels,
     });
-});
+  }
+);
 
-app.post("/hotels", async (req: Request, res: Response): Promise<Response> => {
+app.post(
+  "/hotels",
+  async (req: Request, res: Response): Promise<Response> => {
     const connection = await createConnection();
+
     const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
     const { nome, descricao, endereco, cidade, estrelas, foto_url } = req.body;
-    const hotel: Hotel = new Hotel(nome, descricao, endereco, cidade, estrelas, foto_url);
+    const hotel: Hotel = new Hotel(
+      nome,
+      descricao,
+      endereco,
+      cidade,
+      estrelas,
+      foto_url
+    );
     await hotelsRepository.save(hotel);
     connection.close();
     return res.json({
-        hotel
+      hotel,
     });
-});
+  }
+);
 
-// app.put("/hotels", async (req: Request, res: Response): Promise<Response> => {
-//     const connection = await createConnection();
+app.put(
+  "/hotels/:id",
+  async (req: Request, res: Response): Promise<Response> => {
+    const connection = await createConnection();
 
-//     const Repository: Repository<User> = connection.getRepository(User);
+    const { id } = req.params;
+    const {
+      nome,
+      descricao,
+      endereco,
+      cidade,
+      estrelas,
+      foto_url,
+    } = req.body as Hotel;
+    const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
 
-//     const user: User | undefined = await userRepository.findOne(req.body.id);
+    const hotel: Hotel | undefined = await hotelsRepository.findOne(id);
 
-//     if (user !== undefined) {
-//         user.nome = req.body.nome;
-//         user.email = req.body.email;
+    if (hotel) {
+      hotel.nome = nome;
+      hotel.descricao = descricao;
+      hotel.endereco = endereco;
+      hotel.cidade = cidade;
+      hotel.estrelas = estrelas;
+      hotel.foto_url = foto_url;
+      await hotelsRepository.save(hotel);
+      connection.close();
+      return res.json({
+        hotel,
+      });
+    }
+    connection.close();
+    return res.status(404).json({
+        Error: 'Hotel não encontrado',
+      });
+  }
+);
 
-//         await userRepository.save(user);
-
-//         connection.close();
-        
-//         return res.json({
-//             user
-//         });
-//     }
-
-//     connection.close();
-
-//     return res.status(404).send();
-// });
+app.delete(
+    "/hotels/:id",
+    async (req: Request, res: Response): Promise<Response> => {
+      const connection = await createConnection();
+      const { id } = req.params;
+      const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
+      const hotel: Hotel | undefined = await hotelsRepository.findOne(id);
+  
+      if (hotel) {
+        await hotelsRepository.delete(hotel);
+        connection.close();
+        return res.status(200).send();
+      }
+      
+      connection.close();
+      return res.status(404).json({
+          Error: 'Hotel não encontrado',
+        });
+    }
+  );
 
 // app.get("/todos", async (req: Request, res: Response): Promise<Response> => {
 //     const connection: Connection = await createConnection();
@@ -74,33 +122,32 @@ app.post("/hotels", async (req: Request, res: Response): Promise<Response> => {
 //         user
 //     });
 
-    // const user: User | undefined = await userRepository.findOne(2);
-    
-    // if (user) {
-    //     const todo1: Todo = new Todo('Programar em React', false, user);
-    //     // todo.save(); SRP != SOLID
-    //     await todoRepository.save(todo1);
-        
-    //     // Domain Driven Design | Clean Code | Clean Architecture | SOLID | Boundaries
-    //     const todo2: Todo = new Todo('Programar em Angular', false, user);
-    //     await todoRepository.save(todo2);
+// const user: User | undefined = await userRepository.findOne(2);
 
-    //     connection.close();
-        
-    //     return res.json({
-    //         todo1,
-    //         todo2
-    //     });
-    // }
+// if (user) {
+//     const todo1: Todo = new Todo('Programar em React', false, user);
+//     // todo.save(); SRP != SOLID
+//     await todoRepository.save(todo1);
 
-    // connection.close();
+//     // Domain Driven Design | Clean Code | Clean Architecture | SOLID | Boundaries
+//     const todo2: Todo = new Todo('Programar em Angular', false, user);
+//     await todoRepository.save(todo2);
 
-    // return res.status(404).send();
+//     connection.close();
+
+//     return res.json({
+//         todo1,
+//         todo2
+//     });
+// }
+
+// connection.close();
+
+// return res.status(404).send();
 //});
-
 
 const port: any = process.env.PORT || 3000;
 
 app.listen(port, () => {
-    console.log(`Servidor up na porta ${port}`);
+  console.log(`Servidor up na porta ${port}`);
 });
