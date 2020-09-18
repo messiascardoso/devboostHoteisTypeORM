@@ -18,24 +18,22 @@ app.get("/hotels", async (req: Request, res: Response): Promise<Response> => {
     });
 });
 
-// app.post("/hotels", async (req: Request, res: Response): Promise<Response> => {
-//     const connection = await createConnection();
-//     const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
-//     const user: User = new User(req.body.nome, req.body.email);
+app.post("/hotels", async (req: Request, res: Response): Promise<Response> => {
+    const connection = await createConnection();
+    const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
+    const { nome, descricao, endereco, cidade, estrelas, foto_url } = req.body;
+    const hotel: Hotel = new Hotel(nome, descricao, endereco, cidade, estrelas, foto_url);
+    await hotelsRepository.save(hotel);
+    connection.close();
+    return res.json({
+        hotel
+    });
+});
 
-//     await userRepository.save(user); // &user.id = 1
-
-//     connection.close();
-
-//     return res.json({
-//         id: user.id
-//     });
-// });
-
-// app.put("/users", async (req: Request, res: Response): Promise<Response> => {
+// app.put("/hotels", async (req: Request, res: Response): Promise<Response> => {
 //     const connection = await createConnection();
 
-//     const userRepository: Repository<User> = connection.getRepository(User);
+//     const Repository: Repository<User> = connection.getRepository(User);
 
 //     const user: User | undefined = await userRepository.findOne(req.body.id);
 
