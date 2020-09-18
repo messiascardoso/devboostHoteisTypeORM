@@ -5,24 +5,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const express_1 = __importDefault(require("express"));
-// import User from "./repository/Hotels";
+const typeorm_1 = require("typeorm");
+const Hotels_1 = __importDefault(require("./repository/Hotels"));
 // import Todo from "./repository/Reservations";
 const app = express_1.default();
-//carrega o json enviado no corpo(body)
 app.use(express_1.default.json());
-app.get("/users", async (req, res) => {
-    console.log('shauhs');
-    // const connection = await createConnection();
-    // const userRepository: Repository<User> = connection.getRepository(User);
-    // const users: User[] = await userRepository.find();
-    // connection.close();
+app.get("/hotels", async (req, res) => {
+    const connection = await typeorm_1.createConnection();
+    const hotelsRepository = connection.getRepository(Hotels_1.default);
+    const hotels = await hotelsRepository.find();
+    connection.close();
     return res.json({
-        users: 'oi'
+        hotels
     });
 });
-// app.post("/users", async (req: Request, res: Response): Promise<Response> => {
+// app.post("/hotels", async (req: Request, res: Response): Promise<Response> => {
 //     const connection = await createConnection();
-//     const userRepository: Repository<User> = connection.getRepository(User);
+//     const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
 //     const user: User = new User(req.body.nome, req.body.email);
 //     await userRepository.save(user); // &user.id = 1
 //     connection.close();

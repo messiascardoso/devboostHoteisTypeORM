@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
 const Rooms_1 = __importDefault(require("./Rooms"));
 // Entidade representa uma tables no DB
-let Hotels = class Hotels {
+let Hotel = class Hotel {
     constructor(nome, descricao, endereco, cidade, estrelas, foto_url) {
         this.nome = nome,
             this.descricao = descricao,
@@ -28,37 +28,37 @@ let Hotels = class Hotels {
 __decorate([
     typeorm_1.PrimaryGeneratedColumn(),
     __metadata("design:type", Number)
-], Hotels.prototype, "id", void 0);
+], Hotel.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
-], Hotels.prototype, "nome", void 0);
+], Hotel.prototype, "nome", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
-], Hotels.prototype, "descricao", void 0);
+], Hotel.prototype, "descricao", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
-], Hotels.prototype, "endereco", void 0);
+], Hotel.prototype, "endereco", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
-], Hotels.prototype, "cidade", void 0);
+], Hotel.prototype, "cidade", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", Number)
-], Hotels.prototype, "estrelas", void 0);
+], Hotel.prototype, "estrelas", void 0);
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
-], Hotels.prototype, "foto_url", void 0);
+], Hotel.prototype, "foto_url", void 0);
 __decorate([
-    typeorm_1.OneToMany(type => Rooms_1.default, rooms => rooms.hotels),
+    typeorm_1.OneToMany(type => Rooms_1.default, room => room.hotel),
     __metadata("design:type", Array)
-], Hotels.prototype, "rooms", void 0);
-Hotels = __decorate([
+], Hotel.prototype, "room", void 0);
+Hotel = __decorate([
     typeorm_1.Entity("hotels"),
     __metadata("design:paramtypes", [String, String, String, String, Number, String])
-], Hotels);
-exports.default = Hotels;
+], Hotel);
+exports.default = Hotel;

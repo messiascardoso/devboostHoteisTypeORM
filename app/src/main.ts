@@ -1,34 +1,26 @@
 import "reflect-metadata";
 import express, { Application, Request, Response } from "express";
 import { Connection, createConnection, Repository } from "typeorm";
-// import User from "./repository/Hotels";
+import Hotel from "./repository/Hotels";
 // import Todo from "./repository/Reservations";
 
 const app: Application = express();
 
-//carrega o json enviado no corpo(body)
 app.use(express.json());
 
-app.get("/users", async (req: Request, res: Response): Promise<Response> => {
-    console.log('shauhs')
-    // const connection = await createConnection();
-
-    // const userRepository: Repository<User> = connection.getRepository(User);
-
-    // const users: User[] = await userRepository.find();
-    
-    // connection.close();
-
+app.get("/hotels", async (req: Request, res: Response): Promise<Response> => {
+    const connection = await createConnection();
+    const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
+    const hotels: Hotel[] = await hotelsRepository.find();
+    connection.close();
     return res.json({
-        users: 'oi'
+        hotels
     });
 });
 
-// app.post("/users", async (req: Request, res: Response): Promise<Response> => {
+// app.post("/hotels", async (req: Request, res: Response): Promise<Response> => {
 //     const connection = await createConnection();
-
-//     const userRepository: Repository<User> = connection.getRepository(User);
-
+//     const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
 //     const user: User = new User(req.body.nome, req.body.email);
 
 //     await userRepository.save(user); // &user.id = 1
