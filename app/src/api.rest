@@ -1,0 +1,91 @@
+
+#### Lista Hoteis 
+GET http://localhost:2000/hotels
+
+### Criar Hotel 
+POST http://localhost:2000/hotels HTTP/1.1
+content-type: application/json
+
+{
+    "nome": "Hotels 1",
+	"descricao": "Hotel na beira da praia",
+	"endereco": "Leblon",
+	"cidade": "Rio de Janeiro",
+	"estrelas": 5,
+	"foto_url": "utl"
+}
+
+### Update Hotel
+POST http://localhost:2000/hotels HTTP/1.1
+content-type: application/json
+
+{
+    "nome": "Hotels 1",
+	"descricao": "Hotel na beira da praia teste Update",
+	"endereco": "Leblon",
+	"cidade": "Rio de Janeiro",
+	"estrelas": 5,
+	"foto_url": "utl"
+}
+
+### Deleta Hotel
+DELETE http://localhost:2000/hotels/4 HTTP/1.1
+content-type: application/json
+
+### Criar Quarto
+POST http://localhost:2000/rooms HTTP/1.1
+content-type: application/json
+
+{
+  	"tamanho": "2 metros quadrados",
+	"numero": 201,
+	"hotel": 5
+}
+
+#### Lista rooms 
+GET http://localhost:2000/rooms
+
+### Update Quarto
+PUT http://localhost:2000/rooms/2 HTTP/1.1
+content-type: application/json
+
+{
+  	"tamanho": "3 metros quadrados",
+	"numero": 201,
+	"hotel": 5
+}
+### Delete Quarto
+DELETE http://localhost:2000/rooms/2 HTTP/1.1
+content-type: application/json
+
+
+### Criar Reserva
+POST http://localhost:2000/reservations HTTP/1.1
+content-type: application/json
+
+{
+  	"checkin": "01/02/2018",
+	"checkout": "01/10/2018",
+	"room": 3
+}
+
+#### Lista Reserva 
+GET http://localhost:2000/reservations
+
+### Update Reserva
+PUT http://localhost:2000/reservations/2 HTTP/1.1
+content-type: application/json
+
+{
+  	"tamanho": "3 metros quadrados",
+	"numero": 201,
+	"hotel": 5
+}
+### Delete Reserva
+DELETE http://localhost:2000/reservations/1 HTTP/1.1
+content-type: application/json
+
+
+
+
+

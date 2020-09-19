@@ -13,22 +13,28 @@ app.use(express.json());
 app.get(
   "/hotels",
   async (req: Request, res: Response): Promise<Response> => {
+    let hotels:Hotel[] = [];
     const connection = await createConnection();
     const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
-    const hotels: Hotel[] = await hotelsRepository.find();
-    connection.close();
+    try {
+      hotels = await hotelsRepository.find();
+      connection.close();
+    } catch (error) {
+      console.log('Erro ao conectar no banco')
+      connection.close();
+    }
     return res.json({
       hotels,
     });
   }
 );
-
+// : Promise<Response>
 app.post(
   "/hotels",
-  async (req: Request, res: Response): Promise<Response> => {
+  async (req: Request, res: Response) => {
     const connection = await createConnection();
-
     const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
+    console.log('req.body', req)
     const { nome, descricao, endereco, cidade, estrelas, foto_url } = req.body;
     const hotel: Hotel = new Hotel(
       nome,
@@ -38,12 +44,16 @@ app.post(
       estrelas,
       foto_url
     );
-    await hotelsRepository.save(hotel);
-    connection.close();
+    try {
+      await hotelsRepository.save(hotel);
+      connection.close();
+    } catch (error) {
+      connection.close();
+    }
     return res.json({
       hotel,
     });
-  }
+   }
 );
 
 app.put(
@@ -87,15 +97,23 @@ app.put(
 app.delete(
     "/hotels/:id",
     async (req: Request, res: Response): Promise<Response> => {
+      let hotel: Hotel | undefined; 
       const connection = await createConnection();
       const { id } = req.params;
       const hotelsRepository: Repository<Hotel> = connection.getRepository(Hotel);
-      const hotel: Hotel | undefined = await hotelsRepository.findOne(id);
-  
-      if (hotel) {
-        await hotelsRepository.delete(hotel);
+      try {
+         hotel = await hotelsRepository.findOne({
+          where: {id: id}
+          });
+        console.log('hotel', hotel)
+         if (hotel) {
+          await hotelsRepository.delete(hotel);
+          connection.close();
+          return res.status(200).send();
+         }
+      } catch (error) { 
         connection.close();
-        return res.status(200).send();
+        console.log('error', error)
       }
 
       connection.close();
@@ -105,13 +123,11 @@ app.delete(
     }
   );
 
-
   //Rooms
   app.get(
     "/rooms",
     async (req: Request, res: Response): Promise<Response> => {
       const connection = await createConnection();
-
       const roomsRepository: Repository<Room> = connection.getRepository(Room);
       const rooms: Room[] = await roomsRepository.find();
       connection.close();
@@ -125,16 +141,20 @@ app.delete(
     "/rooms",
     async (req: Request, res: Response): Promise<Response> => {
       const connection = await createConnection();
-  
-      const roomsRepository: Repository<Room> = connection.getRepository(Room);
       const { tamanho, numero, hotel } = req.body;
       const room: Room = new Room(
         tamanho,
         numero,
         hotel
       );
-      await roomsRepository.save(room);
-      connection.close();
+      try {
+        const roomsRepository: Repository<Room> = connection.getRepository(Room);
+        await roomsRepository.save(room);
+        connection.close();
+      } catch (error) {
+        console.log('error',error)
+        connection.close();
+      }
       return res.json({
         room,
       });
@@ -147,9 +167,7 @@ app.delete(
       const connection = await createConnection();
   
       const { id } = req.params;
-      const {
-        tamanho, numero, hotel
-      } = req.body;
+      const {tamanho, numero, hotel} = req.body;
 
       const roomsRepository: Repository<Room> = connection.getRepository(Room);
   
@@ -178,8 +196,9 @@ app.delete(
         const connection = await createConnection();
         const { id } = req.params;
         const roomsRepository: Repository<Room> = connection.getRepository(Room);
-        const room: Room | undefined = await roomsRepository.findOne(id);
-    
+        const room: Room | undefined = await roomsRepository.findOne({
+          where: {id: id}
+          });
         if (room) {
           await roomsRepository.remove(room);
           connection.close();
@@ -269,14 +288,14 @@ app.delete(
         const connection = await createConnection();
         const { id } = req.params;
         const reservationsRepository: Repository<Reservation> = connection.getRepository(Reservation);
-        const reservation: Reservation | undefined = await reservationsRepository.findOne(id);
-    
+        const reservation: Reservation | undefined = await reservationsRepository.findOne({
+          where: {id: id}
+          });
         if (reservation) {
           await reservationsRepository.remove(reservation);
           connection.close();
           return res.status(200).send();
         }
-
         connection.close();
         return res.status(404).json({
             Error: 'Reserva não encontrada não encontrado',

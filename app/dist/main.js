@@ -13,21 +13,35 @@ const Reservations_1 = __importDefault(require("./repository/Reservations"));
 const app = express_1.default();
 app.use(express_1.default.json());
 app.get("/hotels", async (req, res) => {
+    let hotels = [];
     const connection = await typeorm_1.createConnection();
     const hotelsRepository = connection.getRepository(Hotels_1.default);
-    const hotels = await hotelsRepository.find();
-    connection.close();
+    try {
+        hotels = await hotelsRepository.find();
+        connection.close();
+    }
+    catch (error) {
+        console.log('Erro ao conectar no banco');
+        connection.close();
+    }
     return res.json({
         hotels,
     });
 });
+// : Promise<Response>
 app.post("/hotels", async (req, res) => {
     const connection = await typeorm_1.createConnection();
     const hotelsRepository = connection.getRepository(Hotels_1.default);
+    console.log('req.body', req);
     const { nome, descricao, endereco, cidade, estrelas, foto_url } = req.body;
     const hotel = new Hotels_1.default(nome, descricao, endereco, cidade, estrelas, foto_url);
-    await hotelsRepository.save(hotel);
-    connection.close();
+    try {
+        await hotelsRepository.save(hotel);
+        connection.close();
+    }
+    catch (error) {
+        connection.close();
+    }
     return res.json({
         hotel,
     });
@@ -57,14 +71,24 @@ app.put("/hotels/:id", async (req, res) => {
     });
 });
 app.delete("/hotels/:id", async (req, res) => {
+    let hotel;
     const connection = await typeorm_1.createConnection();
     const { id } = req.params;
     const hotelsRepository = connection.getRepository(Hotels_1.default);
-    const hotel = await hotelsRepository.findOne(id);
-    if (hotel) {
-        await hotelsRepository.delete(hotel);
+    try {
+        hotel = await hotelsRepository.findOne({
+            where: { id: id }
+        });
+        console.log('hotel', hotel);
+        if (hotel) {
+            await hotelsRepository.delete(hotel);
+            connection.close();
+            return res.status(200).send();
+        }
+    }
+    catch (error) {
         connection.close();
-        return res.status(200).send();
+        console.log('error', error);
     }
     connection.close();
     return res.status(404).json({
@@ -83,11 +107,17 @@ app.get("/rooms", async (req, res) => {
 });
 app.post("/rooms", async (req, res) => {
     const connection = await typeorm_1.createConnection();
-    const roomsRepository = connection.getRepository(Rooms_1.default);
     const { tamanho, numero, hotel } = req.body;
     const room = new Rooms_1.default(tamanho, numero, hotel);
-    await roomsRepository.save(room);
-    connection.close();
+    try {
+        const roomsRepository = connection.getRepository(Rooms_1.default);
+        await roomsRepository.save(room);
+        connection.close();
+    }
+    catch (error) {
+        console.log('error', error);
+        connection.close();
+    }
     return res.json({
         room,
     });
@@ -117,7 +147,9 @@ app.delete("/rooms/:id", async (req, res) => {
     const connection = await typeorm_1.createConnection();
     const { id } = req.params;
     const roomsRepository = connection.getRepository(Rooms_1.default);
-    const room = await roomsRepository.findOne(id);
+    const room = await roomsRepository.findOne({
+        where: { id: id }
+    });
     if (room) {
         await roomsRepository.remove(room);
         connection.close();
@@ -174,7 +206,9 @@ app.delete("/reservations/:id", async (req, res) => {
     const connection = await typeorm_1.createConnection();
     const { id } = req.params;
     const reservationsRepository = connection.getRepository(Reservations_1.default);
-    const reservation = await reservationsRepository.findOne(id);
+    const reservation = await reservationsRepository.findOne({
+        where: { id: id }
+    });
     if (reservation) {
         await reservationsRepository.remove(reservation);
         connection.close();
